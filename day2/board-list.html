@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3"></script>
+
+</head>
+<body>
+    
+
+    <div id="app">
+
+        <table >
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                </tr>
+                <tr v-for="item in list">
+                    <td>{{item.BOARDNO}}</td>
+                    <td>{{item.TITLE}}</td>
+                    <td>{{item.USERID}}</td>
+                </tr>
+            
+            
+        </table>
+
+    </div>
+
+
+</body>
+</html>
+
+
+<script>
+    
+    const app = Vue.createApp({
+                data() {
+                    return {
+                        list : [],
+                    
+                    };
+                },
+                computed: {
+
+                },
+                methods: {
+
+                },
+                mounted() {
+                    fetch('http://localhost:3000/board/list/')
+                    .then((res)=> res.json())
+                    .then((data) => {
+                        console.log(data.list);
+                        this.list = data.list;  
+                    });
+                	
+                }
+            });
+
+            app.mount("#app");
+
+
+
+</script>
