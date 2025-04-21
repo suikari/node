@@ -13,19 +13,29 @@
     <div id="app">
 
         <table >
-                <tr>
-                    <th>번호</th>
-                    <th>제목</th>
-                    <th>작성자</th>
-                </tr>
-                <tr v-for="item in list">
+            <tr>
+                <th>선택</th>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+            </tr>
+            
+            <template v-for="item in list">
+                <tr >
+                    <td><input type="radio" name="BoardNo" v-model="deleteNo" :value="item.BOARDNO"></td>
                     <td>{{item.BOARDNO}}</td>
-                    <td>{{item.TITLE}}</td>
+                    <td><a href="javascript:;" @click="fnView(item.BOARDNO)">{{item.TITLE}}</a></td>
                     <td>{{item.USERID}}</td>
+                </tr>   
+
+                <tr v-if="selectNO == item.BOARDNO">
+                    <td colspan="3">{{view.CONTENTS}}</td>
                 </tr>
-            
-            
+            </template>
+
         </table>
+        <button @click="fnDelete">삭제</button>
+
 
     </div>
 
@@ -40,22 +50,52 @@
                 data() {
                     return {
                         list : [],
-                    
+                        view : [],
+                        selectNO : -1,
+                        deleteNo : "",
                     };
                 },
                 computed: {
 
                 },
                 methods: {
+                    fnView (boardno) {
+                        this.selectNO = boardno;
+                        fetch('http://localhost:3000/board/view?boardno='+boardno)
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                //console.log(data.list);
+                                this.view = data.list;  
+                            });
+                        
+                    }, 
+                    fnList () {
+                        fetch('http://localhost:3000/board/list/')
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                console.log(data.list);
+                                this.list = data.list;  
+                            });
+                    },
+                    fnDelete() {
 
+                        if(!confirm('정말 삭제할거?')){
+                            return;
+                        } 
+
+                        fetch('http://localhost:3000/board/delete?boardno='+this.deleteNo)
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                //console.log(data.list);
+                                alert(data.message );
+                                this.fnList();
+                            });
+
+                        
+                    }
                 },
                 mounted() {
-                    fetch('http://localhost:3000/board/list/')
-                    .then((res)=> res.json())
-                    .then((data) => {
-                        console.log(data.list);
-                        this.list = data.list;  
-                    });
+                    this.fnList();
                 	
                 }
             });
