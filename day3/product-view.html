@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3"></script>
+
+</head>
+<body>
+    
+
+    <div id="app">
+
+        <table >
+            <tr>
+                <th>번호</th>
+                <th>상품명</th>
+                <th>금액</th>
+                <th>상세내용</th>
+            </tr>
+            
+                <tr >
+                    <td>{{view.productId}}</td>
+                    <td>{{view.productName}}</td>
+                    <td>{{view.price}}</td>
+                    <td>{{view.description}}</td>
+                </tr>   
+
+
+
+        </table>
+        <button @click="fnEdit">수정</button>
+
+
+    </div>
+
+
+</body>
+</html>
+
+
+<script>
+    
+    const app = Vue.createApp({
+                data() {
+                    return {     
+                        view  : [],
+                        selectNO : -1,
+                        productId : "",
+                    };
+                },
+                computed: {
+
+                },
+                methods: {
+                    fnView (productId) {
+                        fetch('http://localhost:3000/product/'+productId)
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                console.log(data.list);
+                                this.view = data.list;  
+                            });
+                        
+                    },
+                    fnEdit (){
+                        location.href = 'product-add.html?productId='+ this.productId;                  
+                    }
+                },
+                mounted() {
+                	
+                    const urlParams = new URL(location.href).searchParams;
+
+                    this.productId = urlParams.get('productId');
+                    
+                    this.fnView(this.productId);
+
+                }
+            });
+
+            app.mount("#app");
+
+
+
+</script>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue@3"></script>
+
+</head>
+<body>
+    
+
+    <div id="app">
+
+       <div>
+            제품명 : <input type="text" placeholder="제품명" v-model="info.productName">
+       </div>
+       <div>
+            제품설명 : <input type="text"  placeholder="제품설명" v-model="info.description">
+       </div>
+       <div>
+            가격 : <input type="number" placeholder="가격" v-model="info.price">
+       </div>
+       <div>
+            재고 : <input type="number" placeholder="재고" v-model="info.stock">
+       </div>
+       <div>
+            종류 : <input type="text" placeholder="종류" v-model="info.category">
+       </div>
+
+       <button v-if="productId == '' " @click="fnAdd">저장</button>
+       <button v-else @click="fnEdit">수정</button>
+
+    </div>
+
+
+</body>
+</html>
+
+
+<script>
+    
+    const app = Vue.createApp({
+                data() {
+                    return {
+                        productId : "",
+                        info : {
+                            productName : "",
+                            description : "",
+                            price : "",
+                            stock : "",
+                            category : "",
+                        }
+                    };
+                },
+                computed: {
+
+                },
+                methods: {
+                    fnView (productId) {
+                        fetch('http://localhost:3000/product/'+productId)
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                console.log(data);
+                                this.info = data.list;
+                            })
+                            .catch( err => {
+                                console.log("서버 에러");
+                            });
+                    },
+                    fnEdit (){
+                        fetch('http://localhost:3000/product', {
+                            method : "PUT",
+                            headers : {
+                                "Content-type" : "application/json",
+                            },
+                            body : JSON.stringify(this.info),
+                        })
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                console.log(data);
+                            })
+                            .catch( err => {
+                                console.log("서버 에러");
+                            });
+                    },
+                    fnAdd () {
+                        fetch('http://localhost:3000/product', {
+                            method : "POST",
+                            headers : {
+                                "Content-type" : "application/json",
+                            },
+                            body : JSON.stringify(this.info),
+                        })
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                console.log(data);
+                            })
+                            .catch( err => {
+                                console.log("서버 에러");
+                            });
+                    }
+                },
+                mounted() {
+                    const urlParams = new URL(location.href).searchParams;
+
+                    this.productId = urlParams.get('productId') || '';
+
+                    if(this.productId != '') {
+                        this.fnView(this.productId);
+                    }
+
+                }
+            });
+
+            app.mount("#app");
+
+
+
+</script>
