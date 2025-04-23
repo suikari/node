@@ -28,6 +28,10 @@
             종류 : <input type="text" placeholder="종류" v-model="info.category">
        </div>
 
+       <form  id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="avatar" />
+       </form>
+      
        <button v-if="productId == '' " @click="fnAdd">저장</button>
        <button v-else @click="fnEdit">수정</button>
 
@@ -85,20 +89,38 @@
                             });
                     },
                     fnAdd () {
+                        // 1단계: JSON 데이터 전송
                         fetch('http://localhost:3000/product', {
-                            method : "POST",
-                            headers : {
-                                "Content-type" : "application/json",
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json",
                             },
-                            body : JSON.stringify(this.info),
+                            body: JSON.stringify(this.info),
                         })
-                            .then((res)=> res.json())
-                            .then((data) => {
-                                console.log(data);
-                            })
-                            .catch( err => {
-                                console.log("서버 에러");
+                        .then((res) => res.json())
+                        .then((data) => {
+                            console.log("JSON 전송 성공:", data);
+                            let productId = data.result[0].insertId;
+
+                            // 2단계: FormData로 파일 전송
+                            const form = document.getElementById("uploadForm");
+                            const formData = new FormData(form);
+                            formData.append("productId", productId);
+
+                            return fetch("http://localhost:3000/product/profile", {
+                                method: "POST",
+                                body: formData,
                             });
+                        })
+                        .then((res) => res.json())
+                        .then((result) => {
+                            console.log("파일 업로드 성공:", result);
+
+                            window.location.href = "product-list.html"; // 또는 '/product/list', etc.
+                        })
+                        .catch((err) => {
+                            console.log("에러 발생", err);
+                        });
                     }
                 },
                 mounted() {

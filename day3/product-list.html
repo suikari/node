@@ -102,9 +102,10 @@
         </div>
 
         <button @click="fnAdd">생성</button>
-        <button @click="fnDelete">삭제</button>
+        <button v-if="userStatus=='A'" @click="fnDelete">삭제</button>
 
 
+        <button @click="fnLogout">로그아웃</button>
 
     </div>
 
@@ -127,6 +128,7 @@
 	                    pageSize: 5,
                         searchOption : 'all',
                         keyword : '',
+                        userStatus : '',
                     };
                 },
                 computed: {
@@ -189,10 +191,44 @@
                         self.page = 1;
                         self.fnList();
                     },
+                    fnUser (){
+                        let self = this;
+                        fetch('http://localhost:3000/user/info',{
+                            method : "GET",
+                            credentials : "include"
+                        })
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                console.log(data);
+                                if(!data.isLogin) {
+                                    alert('로그인 후 이용해 주세요.');
+                                    location.href = '/day4/login.html';
+                                } else {
+                                    this.fnList();
+                                    this.userStatus = data.user.sessionStatus;
+                                }
+                                
+                            });
+
+                    },
+                    fnLogout (){
+                        let self = this;
+                        fetch('http://localhost:3000/user/logout',{
+                            method : "GET",
+                            credentials : "include"
+                        })
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                console.log(data);    
+                                alert('로그아웃 되었습니다.');
+                                location.href = '/day4/login.html';
+          
+                            });
+
+                    }
                 },
                 mounted() {
-                    this.fnList();
-                	
+                	this.fnUser();
                 }
             });
 

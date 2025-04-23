@@ -18,6 +18,7 @@
                 <th>상품명</th>
                 <th>금액</th>
                 <th>상세내용</th>
+                <th>이미지</th>
             </tr>
             
                 <tr >
@@ -25,11 +26,19 @@
                     <td>{{view.productName}}</td>
                     <td>{{view.price}}</td>
                     <td>{{view.description}}</td>
+                    <td>
+                        <div v-for="item in viewImg">
+                            <img :src="`http://localhost:3000/${item.filePath}`">                            
+                        </div>
+
+                    </td>
+
                 </tr>   
 
 
 
         </table>
+
         <button @click="fnEdit">수정</button>
 
 
@@ -46,6 +55,7 @@
                 data() {
                     return {     
                         view  : [],
+                        viewImg : {},
                         selectNO : -1,
                         productId : "",
                     };
@@ -63,6 +73,15 @@
                             });
                         
                     },
+                    fnViewImg (productId) {
+                        fetch('http://localhost:3000/product/profile/'+productId)
+                            .then((res)=> res.json())
+                            .then((data) => {
+                                console.log(data.list);
+                                this.viewImg = data.list;  
+                            });
+                        
+                    },
                     fnEdit (){
                         location.href = 'product-add.html?productId='+ this.productId;                  
                     }
@@ -74,7 +93,7 @@
                     this.productId = urlParams.get('productId');
                     
                     this.fnView(this.productId);
-
+                    this.fnViewImg(this.productId);
                 }
             });
 
