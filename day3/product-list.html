@@ -158,6 +158,7 @@
 
                         fetch('http://localhost:3000/product', {
                             method : "DELETE",
+                            credentials : "include",
                             headers : {
                                 "Content-type" : "application/json",
                             },
@@ -200,7 +201,6 @@
                             credentials : "include",
                             headers: {
                                 "Content-Type": "application/json"
-                                // Authorization 헤더는 필요 없음! (로컬스토리지 안 쓰고 있으니까)
                             }
                         })
                             .then((res)=> res.json())
@@ -208,10 +208,10 @@
                                 console.log(data);
                                 if(!data.isLogin) {
                                     alert('로그인 후 이용해 주세요.');
-                                    //location.href = '/day4/login.html';
+                                    location.href = '/day4/login.html';
                                 } else {
                                     this.fnList();
-                                    this.userStatus = data.user.sessionStatus;
+                                    this.userStatus = data.user.isAdmin;
                                 }
                                 
                             });
